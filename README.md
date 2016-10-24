@@ -48,7 +48,9 @@ To use a USB hard drive, you need to plug it into the Pi's USB port, then do the
 
 ### Create a filesystem with `mkfs`
 
-  1. Run `sudo mkfs.ext4 /dev/sda1`, and wait for this operation to complete.
+  1. Run `sudo mkfs.ext4 -E lazy_itable_init=0,lazy_journal_init=0 /dev/sda1`, and wait for this operation to complete.
+
+> Note that you can initialize the drive more quickly without the `-E` options. If you do so, the disk will be initialized, but for a long time you might notice activity on the hard drive. This is due to `ext4lazyinit` finishing the initialization process in the background.
 
 ### Create a mount point and mount the disk
 

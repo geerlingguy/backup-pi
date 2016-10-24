@@ -2,7 +2,8 @@
 - hosts: backup-pi
   become: yes
 
-  include_vars: config.yml
+  vars_files:
+    - config.yml
 
   roles:
     - geerlingguy.hdparm
