@@ -1,0 +1,5 @@
+---
+hdparm_devices:
+  - dev: /dev/sda
+    options:
+      - "spindown_time = 120"

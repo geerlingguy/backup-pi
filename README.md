@@ -31,11 +31,35 @@ Just like any Raspberry Pi project, you first need to get an OS running and conf
 
 You could technically back up to the microSD card you boot from, but for operations like backups, which write a lot of data to the drive over and over, it's best to use an external drive (SSD or HDD) instead for reliability and speed (especially for random access—[microSD cards are often very slow](http://www.pidramble.com/wiki/benchmarks/microsd-cards)!).
 
-To use a USB hard drive, you need to plug it into the Pi's USB port, then do the following to format and mount it:
-
-  1. TODO
-
 > If you're powering a small USB hard drive using USB only (e.g. it's not plugged into a separate AC adapter), make sure you have a very good 2A power supply driving your Pi. Otherwise the Pi might not get enough power and it will write corrupt data during backup operations!
+
+To use a USB hard drive, you need to plug it into the Pi's USB port, then do the following to partition, format, and mount it:
+
+### Partition the drive with `fdisk`
+
+**Note**: These instructions presume you're using a single external USB hard drive (which Linux should see as `/dev/sda`). If you have multiple drives, you need to partition, format, and mount the correct one, otherwise you could inadvertently wipe out the contents of the wrong drive. _You've been warned!_
+
+  1. Run `sudo fdisk /dev/sda` to open fdisk.
+  2. Enter `p` to list partitions (and verify you're operating on the correct disk!).
+  3. Use `d` to delete any existing partitions (e.g. `1`, `2`, etc.).
+  4. Use `n` to create a new partition, using all the defaults by pressing 'Enter' (if you want to use the whole disk and have one partition).
+  5. Verify the partition settings with `p` again.
+  6. Once satisfied, press `w` to write the partition table.
+
+### Create a filesystem with `mkfs`
+
+  1. Run `sudo mkfs.ext4 /dev/sda1`, and wait for this operation to complete.
+
+### Create a mount point and mount the disk
+
+  1. Create a directory where you'd like to mount the disk (e.g. `sudo mkdir /backup`).
+  2. Mount the disk: `sudo mount /dev/sda1 /backup`.
+  3. Use `df` to verify the disk is mounted.
+  4. If everything's working correctly, make sure the mount is persistent by adding the following line to `/etc/fstab`:
+        
+        /dev/sda1       /backup         ext4    defaults,noatime  0       3
+
+Before the `pi` user can use the mounted backup volume, though, you'll need to change ownership (otherwise you'll get a lot of 'permission denied' warnings unless you log in as `root`!). Run the command `sudo chown -R pi:pi /backup`.
 
 ## Configure the Pi using Ansible
 

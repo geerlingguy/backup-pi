@@ -1,0 +1,2 @@
+[backup-pi]
+10.0.1.24 ansible_user=pi
